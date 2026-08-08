@@ -12,6 +12,36 @@
 
 ---
 
+## アプリ開発ロードマップ
+
+AIどきメモは、研究用シミュレーターとゲームを別物にせず、**同じRelationship OS CoreをGAME MODEとOBSERVER LAB MODEの2つの画面から利用するアプリ**として開発します。
+
+詳細計画:
+
+- [AIどきメモ アプリ作成計画](docs/APP_DEVELOPMENT_PLAN.md)
+
+現在位置:
+
+```text
+[✓] Headless Relationship OS minimum model
+[✓] Observer falsification experiment v0.1
+[✓] 30-seed paired evaluation / GitHub Actions
+[→] Experiment v0.2: Observer target score ablation
+[ ] Core refactor
+[ ] Human 1 + AI 3 の30日 headless game loop
+[ ] Desktop MVP
+[ ] Memory / ToM ablation
+[ ] Human participation
+[ ] Narrative AI adapter
+[ ] Community dynamics
+[ ] Advanced Observer
+[ ] Packaged application
+```
+
+直近の実装順は、**v0.2反証実験 → Core Refactor → 30日ゲームループ → GUI** とします。
+
+---
+
 ## Experiment v0.1 — Observer targeting falsification
 
 ### 研究質問
@@ -213,9 +243,11 @@ GitHub Actionsでも同じテストと30シード実験を実行します。
 ```text
 AI_DOKIDOKI_memorial/
 ├─ .github/workflows/experiment.yml
-├─ docs/experiment_v0_1/
-│  ├─ REPORT.md
-│  └─ summary.json
+├─ docs/
+│  ├─ APP_DEVELOPMENT_PLAN.md
+│  └─ experiment_v0_1/
+│     ├─ REPORT.md
+│     └─ summary.json
 ├─ scripts/run_experiment.py
 ├─ src/ai_dokimemo/
 │  ├─ simulation.py
