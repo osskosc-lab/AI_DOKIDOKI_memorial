@@ -1,0 +1,57 @@
+{
+  "experiment": "observer_targeting_falsification_v0.1",
+  "primary_hypothesis": "Targeted reconciliation reduces tail mean misunderstanding to at most 90% of the no-intervention baseline under paired seeds.",
+  "seeds": 30,
+  "steps": 140,
+  "agents": 16,
+  "primary_metric": "mean directed misunderstanding over relationship edges, averaged over final 20 steps",
+  "baseline": "no Observer intervention with identical exogenous random schedule",
+  "falsification_control": "same-dose reconciliation applied to a random relationship edge",
+  "means": {
+    "none": {
+      "tail_misunderstanding": 0.002634749565594598,
+      "tail_trust": 0.9727120549056149,
+      "tail_conflict": 0.008967931206995633
+    },
+    "random": {
+      "tail_misunderstanding": 0.002567554844791856,
+      "tail_trust": 0.9770121126716822,
+      "tail_conflict": 0.007045693311296438
+    },
+    "targeted": {
+      "tail_misunderstanding": 0.0024316962459167914,
+      "tail_trust": 0.9798916201852788,
+      "tail_conflict": 0.004725130730442357
+    }
+  },
+  "paired_effects": {
+    "targeted_minus_none_misunderstanding": -0.00020305331967780573,
+    "targeted_minus_none_95pct_bootstrap_ci": [
+      -0.00026147410619047957,
+      -0.00015276723634472607
+    ],
+    "targeted_minus_random_misunderstanding": -0.00013585859887506452,
+    "targeted_minus_random_95pct_bootstrap_ci": [
+      -0.00018257309796215412,
+      -0.00009230719789973394
+    ],
+    "targeted_over_none_ratio": 0.9278297645282494,
+    "targeted_over_none_ratio_95pct_bootstrap_ci": [
+      0.914837303055842,
+      0.9400874093336773
+    ],
+    "targeted_beats_random_seed_fraction": 0.8333333333333334,
+    "targeted_minus_none_trust": 0.0071795652796638135
+  },
+  "decision_gates": {
+    "ratio_at_most_0.90": false,
+    "beats_random_in_at_least_70pct_seeds": true,
+    "paired_difference_ci_below_zero": true
+  },
+  "verdict": "NOT_SUPPORTED",
+  "non_claims": [
+    "This does not validate human psychology or romantic behavior.",
+    "This does not prove the Observer policy is optimal outside this toy model.",
+    "The result tests the implementation-level causal mechanism only."
+  ]
+}
