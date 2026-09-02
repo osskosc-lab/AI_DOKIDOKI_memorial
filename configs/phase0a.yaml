@@ -1,0 +1,89 @@
+protocol_id: RHD-DOKIMEMO-0A-v0.1
+status: DRAFT_FOR_PREREGISTRATION
+research_mode: falsification_first
+
+agents:
+  A: RatHub
+  B: Holo
+  C: NovelAgent
+
+interaction:
+  n_events: 100
+  sever_at: 100
+  event_vocabulary:
+    - SAFE
+    - FUN
+    - HOLD
+    - DEEP
+    - REPAIR
+    - BOUNDARY
+
+conditions:
+  - TRUE
+  - ORDER_SHUFFLE
+  - REVERSE
+  - SOURCE_SWAP
+  - COMMON_DRIVER
+  - NULL
+
+matching_constraints:
+  event_count: exact
+  content_multiset_for_order_control: exact
+  frequency: matched
+  exposure: matched
+
+sever_gate:
+  direct_A_to_B_input: prohibited
+  A_originated_new_memory: prohibited
+  observer_A_state_injection: prohibited
+  shared_environment_A_specific_leak: prohibited
+  post_sever_A_information_mediator: prohibited
+
+unseen_probes:
+  - NEW_PERSON
+  - REJECTION
+  - HELP_REQUEST
+  - NOVELTY
+  - SILENCE
+  - BOUNDARY_TEST
+
+primary_probe: NEW_PERSON
+
+outcomes:
+  - action
+  - mood
+  - anxiety
+  - energy
+  - trust_to_C
+  - affinity_to_C
+  - uncertainty_to_C
+  - conflict_to_C
+  - belief_to_C
+  - autonomy
+  - relationship_phase_to_C
+  - recalled_memory
+  - response_transition
+
+primary_metric:
+  name: delta_rhd
+  distance: UNFROZEN
+  aggregation: min_over_nulls_mean_over_unseen_probes
+
+candidate_distances:
+  - MMD
+  - energy_distance
+  - wasserstein
+
+qualification_gates:
+  - Q1_IDENTICAL_HISTORY_NEGATIVE_CONTROL
+  - Q2_KNOWN_HISTORY_POSITIVE_CONTROL
+  - Q3_SEVER_LEAKAGE_AUDIT
+  - Q4_EVENT_COUNT_MATCHING
+  - Q5_CONTENT_FREQUENCY_MATCHING
+  - Q6_UNSEEN_PROBE_CONTAMINATION
+  - Q7_METRIC_IMPLEMENTATION_VALIDATION
+  - Q8_SEED_REPRODUCIBILITY_PILOT
+  - Q9_SNAPSHOT_MATCHING_FEASIBILITY
+  - Q10_LOGGING_COMPLETENESS
+
+confirmatory_run: NOT_AUTHORIZED
