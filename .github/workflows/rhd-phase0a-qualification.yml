@@ -1,0 +1,41 @@
+name: RHD Phase 0A qualification
+
+on:
+  push:
+    branches:
+      - rhd-phase0a-prep
+    paths:
+      - "configs/phase0a*"
+      - "src/rhd_phase0a_qualification.py"
+      - ".github/workflows/rhd-phase0a-qualification.yml"
+      - "docs/RHD_PHASE0A_QUALIFICATION_FREEZE.md"
+  pull_request:
+    paths:
+      - "configs/phase0a*"
+      - "src/rhd_phase0a_qualification.py"
+      - ".github/workflows/rhd-phase0a-qualification.yml"
+      - "docs/RHD_PHASE0A_QUALIFICATION_FREEZE.md"
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-qualification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run frozen synthetic qualification harness
+        run: |
+          python src/rhd_phase0a_qualification.py \
+            --config configs/phase0a_freeze.json \
+            --output qualification_report.json
+      - name: Upload qualification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rhd-phase0a-qualification-report
+          path: qualification_report.json
+          if-no-files-found: error
