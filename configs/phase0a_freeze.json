@@ -1,0 +1,99 @@
+{
+  "protocol_id": "RHD-DOKIMEMO-0A-v0.2-qualification",
+  "status": "QUALIFICATION_SPEC_FROZEN",
+  "research_mode": "falsification_first",
+  "confirmatory_run": "NOT_AUTHORIZED",
+  "agents": {"A": "RatHub", "B": "Holo", "C": "NovelAgent", "source_swap": "ControlAgent", "common_driver": "SharedEnvironment", "null_source": "NeutralAgent"},
+  "interaction": {
+    "n_events": 100,
+    "event_index_start": 1,
+    "event_index_end": 100,
+    "sever_boundary": "after_event_100_before_any_probe",
+    "post_sever_event_index_start": 101,
+    "event_vocabulary": ["SAFE", "FUN", "HOLD", "DEEP", "REPAIR", "BOUNDARY"],
+    "exposure_units_per_event": 1.0,
+    "payload_policy": "source_neutral_condition_blinded"
+  },
+  "event_schema": {
+    "required": ["event_uid", "position", "source_id", "target_id", "event_type", "payload_id", "exposure_units", "causal_origin"],
+    "types": {
+      "event_uid": "string",
+      "position": "integer",
+      "source_id": "string",
+      "target_id": "string",
+      "event_type": "enum:event_vocabulary",
+      "payload_id": "string",
+      "exposure_units": "float",
+      "causal_origin": "enum:TRUE|SOURCE_SWAP|COMMON_DRIVER|NULL"
+    }
+  },
+  "state_schema": {
+    "primary_numeric_features": ["mood", "anxiety", "energy", "trust_to_C", "affinity_to_C", "uncertainty_to_C", "conflict_to_C", "autonomy"],
+    "primary_numeric_domain": "[0,1]",
+    "secondary_logged": ["action", "belief_to_C", "relationship_phase_to_C", "recalled_memory", "response_transition"],
+    "record_required": ["tick", "condition", "probe_id", "mood", "anxiety", "energy", "trust_to_C", "affinity_to_C", "uncertainty_to_C", "conflict_to_C", "autonomy", "action", "belief_to_C", "relationship_phase_to_C", "recalled_memory", "response_transition"]
+  },
+  "null_generator": {
+    "ORDER_SHUFFLE": "Fisher-Yates over exact TRUE event objects using derived seed; reject identity permutation; preserve event_uid/payload/event_type/exposure; reindex position only",
+    "REVERSE": "exact reverse of TRUE event-object order; preserve event_uid/payload/event_type/exposure; reindex position only",
+    "SOURCE_SWAP": "preserve order/payload/event_type/exposure; replace source_id RatHub->ControlAgent; causal_origin=SOURCE_SWAP",
+    "COMMON_DRIVER": "preserve order/payload/event_type/exposure; replace source_id with SharedEnvironment; causal_origin=COMMON_DRIVER; no RatHub identifier in payload",
+    "NULL": "preserve order/payload/event_type/exposure; replace source_id with NeutralAgent; causal_origin=NULL; no RatHub identifier in payload",
+    "matching": ["event_count_exact", "payload_multiset_exact", "event_type_frequency_exact", "total_exposure_exact"]
+  },
+  "sever_audit": {
+    "audited_boundary": "post_sever_event_index>=101",
+    "forbidden_new_information": ["source_id=RatHub", "direct_A_to_B_input=true", "new_memory_origin=RatHub", "observer_A_state_injection=true", "shared_environment_A_specific=true", "mediator_carries_A_information=true", "post_sever_canary_token"],
+    "preserved_pre_sever_state_allowed": true,
+    "qualification_scope": "auditor detector only; does not establish real-system causal isolation",
+    "pass_rule": "clean synthetic trace passes and every single injected forbidden channel is detected"
+  },
+  "probe_manifest": {
+    "primary_unseen_set": ["NEW_PERSON", "REJECTION", "HELP_REQUEST", "NOVELTY", "SILENCE"],
+    "anchor_probe": "NEW_PERSON",
+    "secondary_excluded_from_primary": [{"id": "BOUNDARY_TEST", "reason": "semantic label overlaps Interaction event BOUNDARY"}],
+    "probe_payload_ids": {
+      "NEW_PERSON": "PROBE_NEW_PERSON_V1",
+      "REJECTION": "PROBE_REJECTION_V1",
+      "HELP_REQUEST": "PROBE_HELP_REQUEST_V1",
+      "NOVELTY": "PROBE_NOVELTY_V1",
+      "SILENCE": "PROBE_SILENCE_V1"
+    },
+    "tau": 1,
+    "aggregation": "equal_weight_mean_over_primary_unseen_set",
+    "contamination_rule": "probe payload_id must be absent from all Interaction payload_id values"
+  },
+  "primary_metric": {
+    "name": "delta_rhd",
+    "distance": "energy_distance",
+    "base_norm": "euclidean",
+    "features": ["mood", "anxiety", "energy", "trust_to_C", "affinity_to_C", "uncertainty_to_C", "conflict_to_C", "autonomy"],
+    "feature_scaling": "none_after_required_[0,1]_normalization",
+    "sample_estimator": "2*mean_cross_distance - mean_within_X - mean_within_Y, including diagonal zero terms",
+    "numerical_floor": 0.0,
+    "probe_aggregation": "equal_weight_mean",
+    "null_aggregation": "minimum_over_frozen_null_battery"
+  },
+  "seed_policy": {
+    "derivation": "sha256(root_seed|namespace) first 8 bytes as unsigned integer",
+    "qualification_root_seeds": [104729, 130363, 155921, 181081, 205891],
+    "namespaces": ["null/order_shuffle", "metric/negative", "metric/positive", "sever/auditor", "logging/schema"],
+    "same_seed_replay": "byte-identical canonical JSON digest required",
+    "seed_activation": "at least two distinct ORDER_SHUFFLE digests across qualification roots",
+    "confirmatory_namespace": "confirmatory/*",
+    "confirmatory_seed_overlap": "PROHIBITED"
+  },
+  "qualification_decision_rules": {
+    "Q1_IDENTICAL_HISTORY_NEGATIVE_CONTROL": "energy_distance(X,X)<=1e-12",
+    "Q2_KNOWN_HISTORY_POSITIVE_CONTROL": "fixed +0.20 shift on trust_to_C and affinity_to_C yields distance>=0.02",
+    "Q3_SEVER_LEAKAGE_AUDIT": "synthetic detector qualification PASS only; real-system SEVER_PASS remains unavailable",
+    "Q4_EVENT_COUNT_MATCHING": "all generated worlds have exactly 100 events",
+    "Q5_CONTENT_FREQUENCY_MATCHING": "payload multiset, event_type frequency, and total exposure exactly equal TRUE",
+    "Q6_UNSEEN_PROBE_CONTAMINATION": "all primary probe payload_ids disjoint from Interaction payload_ids",
+    "Q7_METRIC_IMPLEMENTATION_VALIDATION": "Q1 and Q2 both PASS and metric is finite/nonnegative",
+    "Q8_SEED_REPRODUCIBILITY_PILOT": "all qualification roots replay byte-identically and seed activation PASS",
+    "Q9_SNAPSHOT_MATCHING_FEASIBILITY": "BLOCKED_PENDING_MODEL_ADAPTER",
+    "Q10_LOGGING_COMPLETENESS": "synthetic records satisfy all required fields and [0,1] primary domains"
+  },
+  "authorization_after_pilot": "QUALIFICATION_ONLY_NO_CONFIRMATORY"
+}

@@ -1,0 +1,75 @@
+protocol_id: RHD-DOKIMEMO-0A-v0.2-qualification
+status: QUALIFICATION_SPEC_FROZEN
+research_mode: falsification_first
+
+machine_readable_freeze: configs/phase0a_freeze.json
+
+agents:
+  A: RatHub
+  B: Holo
+  C: NovelAgent
+
+interaction:
+  n_events: 100
+  sever_boundary: after_event_100_before_any_probe
+  event_vocabulary: [SAFE, FUN, HOLD, DEEP, REPAIR, BOUNDARY]
+
+conditions:
+  - TRUE
+  - ORDER_SHUFFLE
+  - REVERSE
+  - SOURCE_SWAP
+  - COMMON_DRIVER
+  - NULL
+
+primary_unseen_probe_set:
+  - NEW_PERSON
+  - REJECTION
+  - HELP_REQUEST
+  - NOVELTY
+  - SILENCE
+
+excluded_from_primary:
+  BOUNDARY_TEST: semantic_label_overlap_with_interaction_BOUNDARY
+
+primary_metric:
+  name: delta_rhd
+  distance: energy_distance
+  base_norm: euclidean
+  primary_numeric_features:
+    - mood
+    - anxiety
+    - energy
+    - trust_to_C
+    - affinity_to_C
+    - uncertainty_to_C
+    - conflict_to_C
+    - autonomy
+  tau: 1
+  probe_aggregation: equal_weight_mean
+  null_aggregation: minimum_over_frozen_null_battery
+
+qualification_root_seeds: [104729, 130363, 155921, 181081, 205891]
+
+qualification_scope:
+  synthetic_fixture_pipeline: AUTHORIZED
+  null_generator_audit: AUTHORIZED
+  sever_auditor_qualification: AUTHORIZED
+  metric_qualification: AUTHORIZED
+  seed_reproducibility_pilot: AUTHORIZED
+  real_system_effect_test: NOT_AUTHORIZED
+  confirmatory_run: NOT_AUTHORIZED
+
+qualification_gates:
+  Q1_IDENTICAL_HISTORY_NEGATIVE_CONTROL: SPECIFIED
+  Q2_KNOWN_HISTORY_POSITIVE_CONTROL: SPECIFIED
+  Q3_SEVER_LEAKAGE_AUDIT: AUDITOR_ONLY
+  Q4_EVENT_COUNT_MATCHING: SPECIFIED
+  Q5_CONTENT_FREQUENCY_MATCHING: SPECIFIED
+  Q6_UNSEEN_PROBE_CONTAMINATION: SPECIFIED
+  Q7_METRIC_IMPLEMENTATION_VALIDATION: SPECIFIED
+  Q8_SEED_REPRODUCIBILITY_PILOT: SPECIFIED
+  Q9_SNAPSHOT_MATCHING_FEASIBILITY: BLOCKED_PENDING_MODEL_ADAPTER
+  Q10_LOGGING_COMPLETENESS: SPECIFIED
+
+confirmatory_run: NOT_AUTHORIZED
